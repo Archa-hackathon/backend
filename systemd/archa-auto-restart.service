@@ -4,7 +4,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/srv/Archa/src/main.py
+ExecStart=/home/user/Archa/src/main.py
 Type=oneshot
 RemainAfterExit=true
 
