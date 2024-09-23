@@ -1,0 +1,12 @@
+[Unit]
+Description=Run the main script easily via systemctl.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/srv/Archa/src/main.py
+Type=oneshot
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
