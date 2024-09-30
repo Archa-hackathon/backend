@@ -26,16 +26,18 @@ class Order:
 
 @piticko.route("/create_order", methods=["POST"])
 def create_order():
-    order = request.json
+    if "items" not in request.json:
+        return jsonify({"success": False, "error": "items is required"}), 400
 
-    if "items" not in order:
-        return jsonify({"error": "items is required"}), 400
+    items: list[str] = request.json["items"]
 
-    for item in order["items"]:
-        if item not in ALLOWED_ITEMS:
-            return jsonify({"error": f"{item} is not allowed"}), 400
+    for item in items:
+        if item in ALLOWED_ITEMS:
+            continue
 
-    order = Order(order["items"])
+        return jsonify({"success": False, "error": f"{item} is not allowed"}), 400
+
+    order: Order = Order(items)
 
     ORDERS.append(order)
 
