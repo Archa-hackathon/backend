@@ -38,6 +38,7 @@ EXISTING_CARDS: list[Card] = []
 
 
 @market.route("/set_offer", methods=["POST"])
+@cross_origin()
 def set_offer():
     data: dict = request.get_json()
 
@@ -73,6 +74,7 @@ def set_offer():
     return jsonify({"success": True}), 200
 
 @market.route("/my_collection", methods=["POST"])
+@cross_origin()
 def my_collection():
     data: dict = request.get_json()
 
@@ -86,6 +88,7 @@ def my_collection():
     }), 200
 
 @market.route("/buy_card", methods=["POST"])
+@cross_origin()
 def buy_card():
     data: dict = request.get_json()
 
@@ -115,6 +118,7 @@ def buy_card():
     return jsonify({"success": True}), 200
 
 @market.route("/list_offers", methods=["POST"])
+@cross_origin()
 def list_offers():
     data: dict = request.get_json()
 
@@ -128,6 +132,7 @@ def list_offers():
     }), 200
 
 @market.route("/set_watch", methods=["POST"])
+@cross_origin()
 def set_watch():
     data: dict = request.get_json()
 
@@ -162,6 +167,7 @@ def set_watch():
 # ADMIN
 
 @market.route("/create_card", methods=["POST"])
+@cross_origin()
 def create_card():
     data: dict = request.get_json()
 
