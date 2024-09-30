@@ -22,9 +22,11 @@ def create_app():
     # Register the blueprints
     from apps.filter.main import filtr
     from apps.piticko.main import piticko
+    from apps.chatbot.main import chatbot
 
     app.register_blueprint(piticko, url_prefix="/bar")
     app.register_blueprint(filtr, url_prefix="/filter")
+    app.register_blueprint(chatbot, url_prefix="/chatbot")
 
     return app
 
