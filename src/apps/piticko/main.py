@@ -201,20 +201,20 @@ def pickup_order():
 def delete_order():
     data = request.get_json()
 
-    if "id" not in data:
+    if "secret_id" not in data:
         return jsonify({"error": "Supplied data does not contain an order id."}), 400
 
-    id = data["id"]
+    id = data["secret_id"]
 
     order = None
 
     for existing_order in ORDERS:
-        if existing_order.id == id:
+        if existing_order.secret_id == id:
             order = existing_order
             break
 
     if order is None:
-        return jsonify({"error": f"Order with id {id} not found"}), 400
+        return jsonify({"error": f"Order with secret_id {id} not found"}), 400
 
     ORDERS.remove(order)
 
