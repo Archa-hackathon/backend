@@ -8,11 +8,12 @@ market = Blueprint("market", __name__)
 
 
 class Card:
-    def __init__(self, name: str, owner: str):
-        self.id = str(uuid.uuid4())
-        self.owner = owner
+    def __init__(self, name: str, desc: str, owner: str):
         self.name = name
+        self.desc = desc
+        self.owner = owner
 
+        self.id = str(uuid.uuid4())
         self.price = 0
         self.for_sale = False
 
@@ -24,8 +25,9 @@ class Card:
     def as_json(self):
         return {
             "id": self.id,
-            "owner": self.owner,
             "name": self.name,
+            "desc": self.desc,
+            "owner": self.owner,
             "price": self.price,
             "for_sale": self.for_sale,
             "watchers": self.watchers
