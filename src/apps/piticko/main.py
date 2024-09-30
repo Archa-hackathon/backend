@@ -6,10 +6,11 @@ piticko = Blueprint("bar", __name__)
 
 
 class Order:
-    def __init__(self, items):
+    def __init__(self, items, user):
         self.id = str(uuid.uuid4())
         self.secret_id = str(uuid.uuid4())
         self.items = items
+        self.user = user
         self.finished = False
 
     def dict(self):
@@ -18,6 +19,7 @@ class Order:
             "secret_id": self.secret_id,
             "finished": self.finished,
             "items": self.items,
+            "user": self.user,
         }
 
     def dict_no_secret(self):
@@ -29,28 +31,80 @@ class Order:
 
 
 ORDERS: list[Order] = []  # Will be a database later?
-ALLOWED_ITEMS = ["pizza", "beer", "burger"]
+ITEMS = {
+    "currency": "CZK",
+    "currencySymbol": "Kč",
+    "drinks": [
+        {"name": "Voda 0.5l", "icon": "", "price": 20},
+        {"name": "Coca Cola 0.5l", "icon": "", "price": 30},
+        {"name": "Gin Tonic", "icon": "", "price": 145},
+        {"name": "Skinny Bitch", "icon": "", "price": 135},
+        {"name": "Coba Libre", "icon": "", "price": 145},
+    ],
+}
+
+
+def find_item(name: str) -> int:
+    for i, item in enumerate(ITEMS["drinks"]):
+        if item.name == name:
+            return i
+
+    raise ValueError(f"Couldn't find item that satisfies query name='{name}")
 
 
 @piticko.route("/create_order", methods=["POST"])
 def create_order():
-    if "items" not in request.json:
-        return jsonify({"success": False, "error": "items is required"}), 400
+    if "order" not in request.json:
+        return jsonify({"success": False, "error": "'order' is required"}), 400
+    if "user" not in request.json:
+        return jsonify({"success": False, "error": "'user' is required"}), 400
 
-    items: list[str] = request.json["items"]
+    items = request.json["order"]
 
     for item in items:
-        if item in ALLOWED_ITEMS:
-            continue
+        if "name" not in item:
+            return jsonify({"success": False, "error": "'name' is required"}), 400
+        if "quantity" not in item:
+            return jsonify({"success": False, "error": "'quantity' is required"}), 400
 
-        return jsonify({"success": False, "error": f"{item} is not allowed"}), 400
+        try:
+            find_item(item.get("name"))
+        except ValueError:
+            return (
+                jsonify({"success": False, "error": f"{item.get('name')} not found"}),
+                404,
+            )
 
-    order: Order = Order(items)
+    user = request.json["user"]
+
+    if len(user) == 0 or len(user) > 30:
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "error": "User name must be between 1 and 30 characters",
+                }
+            ),
+            400,
+        )
+    if len(items) == 0:
+        return (
+            jsonify(
+                {"success": False, "error": "Order must contain at least one item"}
+            ),
+            400,
+        )
+
+    order: Order = Order(items, user)
 
     ORDERS.append(order)
 
-    # Return only the secret id
-    return jsonify({"secret_id": order.secret_id, "success": True})
+    return jsonify({"secret_id": order.secret_id, "id": order.id, "success": True})
+
+
+@piticko.route("/get_items", methods=["GET"])
+def get_items():
+    return jsonify(ITEMS), 200
 
 
 @piticko.route("/get_order_status", methods=["GET"])
@@ -131,4 +185,3 @@ def pickup_order():
     ORDERS.remove(order)
 
     return jsonify({"exists": True, "order": order.dict()}), 200
-
