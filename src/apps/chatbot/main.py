@@ -1,8 +1,8 @@
-import sqlite3
 import ollama
 import json, os
+from uuid import uuid4
 
-from flask import Blueprint, current_app, g, jsonify, request, Response
+from flask import Blueprint, jsonify, request, Response
 from flask import copy_current_request_context
 
 from .goout_event_list import UPCOMING_EVENTS_PROPMT
@@ -10,27 +10,25 @@ from .goout_event_list import UPCOMING_EVENTS_PROPMT
 
 chatbot = Blueprint("chatbot", __name__)
 
+class Chat:
+    def __init__(self, model: str):
+        self.id = str(uuid4())
+        self.model = model
+
+        with open(os.path.join(os.path.dirname(__file__), "system_prompt.json"), "r") as file:
+            sys_prompt = json.load(file)
+
+        self.messages = [{
+            "role": "system",
+            "content": sys_prompt
+        }]
+    
+    def question(self, prompt):
+        pass
+
+CHATS = []
 
 ollama_client = ollama.Client("http://192.168.0.101:1111")
-with open(os.path.join(os.path.dirname(__file__), "system_prompt.json"), "r") as file:
-    SYSTEM_PROMPT = json.load(file)
-
-
-def get_db():
-    if "db" not in g:
-        g.db = sqlite3.connect(
-            current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        g.db.row_factory = sqlite3.Row
-
-    return g.db
-
-
-def close_db(e=None):
-    db = g.pop("db", None)
-
-    if db is not None:
-        db.close()
 
 
 @chatbot.route("/question", methods=["POST"])
