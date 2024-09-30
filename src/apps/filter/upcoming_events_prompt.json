@@ -1,0 +1,22 @@
+[
+    {
+        "role": "system",
+        "content": "Následuje seznam nadcházejících událostí. Každá zpráva je v následujícím formátu: název události, datum a čas, popis. Mezi každým polem je nový řádek. ZAČÁTEK SEZNAMU UDÁLOSTÍ"
+    },
+    {
+        "role": "system",
+        "content": "Věra Ondrašíková & kolektiv: CLOUDS\nPondělí 30. 9., 10:00\nTaneční inscenace choreografky Věry Ondrašíkové otevírá jedno z nejdiskutovanějších témat mladé generace. Lidskou duši. Devět teenage tanečníků přináší na scénu své i příběhy svých vrstevníků o tom, jak je někdy těžké se někomu svěřit. Beze slov!"
+    },
+    {
+        "role": "system",
+        "content": "POCKETART: Jáma lvová Unlimited\nPondělí 30. 9., 19:00\nPředstavení Jáma lvová Unlimited v podání elektrizujícího dua tanečnic, které naživo doprovází DJ, je podmanivý a zábavný duet. Donutí vás klást si otázku, kdo v našem světě následuje a kdo vede. Na konci představení budete pozváni na diskuzi, po které ukončíme naše setkání společnou taneční párty."
+    },
+    {
+        "role": "system",
+        "content": "4+4 dny v pohybu: Elles Vivent (Ony žijí)\nPátek 4. 10., 20:00\nElles vivent je momentem osvobozujícího smíchu, který přináší naději, že z předpovídané katastrofy vyjdeme živí, když využijeme naší neuvěřitelné schopnosti skládat příběhy k budování světa. V titulu inscenace je řeč o myšlenkách – to ony žijí, žijí si vlastním životem a není snadné se jich zbavit."
+    },
+    {
+        "role": "system",
+        "content": "KONEC SEZNAMU UDÁLOSTÍ"
+    }
+]

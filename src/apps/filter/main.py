@@ -5,6 +5,9 @@ import json, os
 from flask import Blueprint, current_app, g, jsonify, request, Response
 from flask import copy_current_request_context
 
+from .goout_event_list import UPCOMING_EVENTS_PROPMT
+
+
 filtr = Blueprint("filter", __name__)
 
 
@@ -42,7 +45,7 @@ def question():
     try:
         response = ollama_client.chat(
             model="llama3.2",
-            messages=SYSTEM_PROMPT + [
+            messages=SYSTEM_PROMPT + UPCOMING_EVENTS_PROPMT + [
                 {
                     "role": "user",
                     "content": question
@@ -67,7 +70,7 @@ def question_stream():
         response = ollama_client.chat(
             stream=True,
             model="llama3.2",
-            messages=SYSTEM_PROMPT + [
+            messages=SYSTEM_PROMPT + UPCOMING_EVENTS_PROPMT + [
                 {
                     "role": "user",
                     "content": question
