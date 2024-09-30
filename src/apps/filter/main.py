@@ -1,5 +1,6 @@
 import sqlite3
 import ollama
+import json
 
 from flask import Blueprint, current_app, g, jsonify, request, Response
 from flask import copy_current_request_context
@@ -75,12 +76,8 @@ def question_stream():
         @copy_current_request_context
         def generator():
             for chunk in response:
-                print("CHUNK")
-                print(chunk)
-                yield jsonify(chunk)
-                print("YIELDED")
+                yield f"{json.dumps(chunk)}\n"
 
-        #return jsonify(response), 200
         return Response(generator(), content_type="text/plain")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
