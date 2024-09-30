@@ -4,9 +4,6 @@ from flask import Blueprint, jsonify, request
 
 piticko = Blueprint("bar", __name__)
 
-ORDERS = []  # Will be a database later?
-ALLOWED_ITEMS = ["pizza", "beer", "burger"]
-
 
 class Order:
     def __init__(self, items):
@@ -22,7 +19,17 @@ class Order:
             "finished": self.finished,
             "items": self.items,
         }
+    
+    def dict_no_secret(self):
+        return {
+            "id": self.id,
+            "finished": self.finished,
+            "items": self.items,
+        }
 
+
+ORDERS: list[Order] = []  # Will be a database later?
+ALLOWED_ITEMS = ["pizza", "beer", "burger"]
 
 @piticko.route("/create_order", methods=["POST"])
 def create_order():
@@ -65,3 +72,10 @@ def finish_order():
     order.finished = True
 
     return jsonify({"success": True}), 200
+
+@piticko.route("/list_orders", methods=["GET"])
+def list_orders():
+    return jsonify({
+        "success": True,
+        "orders": [order.dict_no_secret() for order in ORDERS]
+    }), 200
