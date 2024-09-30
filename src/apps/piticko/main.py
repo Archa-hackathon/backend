@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 piticko = Blueprint("bar", __name__)
 
 ORDERS = []  # Will be a database later?
-ALLOWED_ITEMS["pizza", "beer", "burger"]
+ALLOWED_ITEMS = ["pizza", "beer", "burger"]
 
 
 @piticko.route("/create_order", methods=["POST"])
@@ -19,8 +19,11 @@ def create_order():
 
     order_obj = {"id": 1}  # Calculate id later
 
+
 # ADMIN
+
 
 @piticko.route("/finish_order", methods=["POST"])
 def create_order():
     data = request.get_json()
+
