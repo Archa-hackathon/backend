@@ -13,8 +13,10 @@ SYSTEM_PROMPT = [
 ]
 
 KEY_ENV_NAME = "STUCKINVIM_KEY"
-ROTATOR_URL = "http://getkeya.stuckinvim.com/api/data?api_key=%key%"
+ROTATOR_URL = "http://getkeya.stuckinvim.cm/api/data?api_key=%key%"
 MODEL = "gpt-4o-mini"
+
+Questions = []
 
 
 def fetch_key():
@@ -37,8 +39,38 @@ def fetch_key():
 
 
 client = openai.Client(api_key=fetch_key())
-
 otazky = Blueprint("otazky", __name__)
+
+
+@otazky.route("/get_questions", methods=["GET"])
+@cross_origin()
+def get_questions():
+    # Remove the correct answer from all questions
+    sanitized_questions = [
+        {"question": q.get("question"), "answers": q.get("answers")} for q in Questions
+    ]
+
+    return jsonify(sanitized_questions), 200
+
+
+@otazky.route("/answer_question", methods=["POST"])
+@cross_origin()
+def answer_question():
+    data = request.get_json()
+
+    if "question" not in data:
+        return jsonify({"error": "Supplied data does not contain a question."}), 400
+    if "answer" not in data:
+        return jsonify({"error": "Supplied data does not contain an answer."}), 400
+
+    question_obj = Questions.find(lambda q: q.get("question") == data["question"])
+
+    if question_obj is None:
+        return jsonify({"error": "Question not found."}), 404
+
+    is_correct = question_obj.get("correct") == data["answer"]
+
+    return jsonify({"correct": is_correct}), 200
 
 
 # ADMIN
@@ -58,5 +90,7 @@ def generate_question():
     )
 
     response: str = chat_completion.choices[0].message.content
+
+    Questions.append(response)
 
     return jsonify(response), 200
