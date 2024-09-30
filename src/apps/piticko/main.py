@@ -37,18 +37,18 @@ ITEMS = {
     "currency": "CZK",
     "currencySymbol": "Kč",
     "drinks": [
-        {"name": "Voda 0.5l", "icon": "", "price": 20},
-        {"name": "Coca Cola 0.5l", "icon": "", "price": 30},
-        {"name": "Gin Tonic", "icon": "", "price": 145},
-        {"name": "Skinny Bitch", "icon": "", "price": 135},
-        {"name": "Coba Libre", "icon": "", "price": 145},
+        {"name": "Voda 0.5l", "icon": "/food/water.png", "price": 20},
+        {"name": "Coca Cola 0.5l", "icon": "/food/coke.png", "price": 30},
+        {"name": "Gin Tonic", "icon": "/food/gintonic.png", "price": 145},
+        {"name": "Cuba Libre", "icon": "/food/cubalibre.png", "price": 145},
+        {"name": "Magnesia perlivá voda", "icon": "", "price": 25},
     ],
 }
 
 
 def find_item(name: str) -> int:
     for i, item in enumerate(ITEMS["drinks"]):
-        if item.name == name:
+        if item["name"] == name:
             return i
 
     raise ValueError(f"Couldn't find item that satisfies query name='{name}")
@@ -123,7 +123,10 @@ def get_order_status():
         if order.secret_id != secret_id:
             continue
 
-        return jsonify({"success": True, "finished": order.finished}), 200
+        return (
+            jsonify({"success": True, "finished": order.finished, "id": order.id}),
+            200,
+        )
 
     return jsonify({"success": False, "error": "Order not found"}), 404
 

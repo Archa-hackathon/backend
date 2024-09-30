@@ -1,26 +1,34 @@
 #!/usr/bin/python3
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
-from apps.filter.main import filtr
-from apps.piticko.main import piticko
-
-app = Flask(__name__)
-app.register_blueprint(piticko, url_prefix="/bar")
-app.register_blueprint(filtr, url_prefix="/filter")
-
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db = SQLAlchemy(app)
+from extensions import db
 
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+def create_app():
+    app = Flask(__name__)
+
+    # Database configuration
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    # Initialize the database with the app
+    db.init_app(app)
+
+    # Initialize Flask-Migrate
+    Migrate(app, db)
+
+    # Register the blueprints
+    from apps.filter.main import filtr
+    from apps.piticko.main import piticko
+
+    app.register_blueprint(piticko, url_prefix="/bar")
+    app.register_blueprint(filtr, url_prefix="/filter")
+
+    return app
 
 
 if __name__ == "__main__":
-    print(app.url_map)
+    app = create_app()
     app.run(host="0.0.0.0", port=8080)
