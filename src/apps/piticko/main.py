@@ -40,8 +40,8 @@ ITEMS = {
         {"name": "Voda 0.5l", "icon": "", "price": 20},
         {"name": "Coca Cola 0.5l", "icon": "", "price": 30},
         {"name": "Gin Tonic", "icon": "", "price": 145},
-        {"name": "Skinny Bitch", "icon": "", "price": 135},
-        {"name": "Coba Libre", "icon": "", "price": 145},
+        {"name": "Cuba Libre", "icon": "", "price": 145},
+        {"name": "Magnesia 0.5l", "icon": "", "price": 25},
     ],
 }
 
