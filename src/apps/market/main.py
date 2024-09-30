@@ -15,6 +15,8 @@ class Card:
 
         self.price = 0
         self.for_sale = False
+
+        self.watchers = [] # list of users that are watching this card
     
     def __str__(self) -> str:
         return json.dumps({
@@ -22,7 +24,8 @@ class Card:
             "owner": self.owner,
             "name": self.name,
             "price": self.price,
-            "for_sale": self.for_sale
+            "for_sale": self.for_sale,
+            "watchers": self.watchers
         })
 
 
@@ -59,6 +62,8 @@ def set_offer():
     else:
         card.price = price
         card.for_sale = True
+    
+    # TODO: here notify watchers of this card that something happened
     
     return jsonify({"success": True}), 200
 
@@ -100,6 +105,8 @@ def buy_card():
     card.owner = user
     card.for_sale = False
 
+    # TODO: here notify watchers of this card that something happened
+
     return jsonify({"success": True}), 200
 
 @market.route("/list_offers", methods=["POST"])
@@ -114,6 +121,38 @@ def list_offers():
     return jsonify({
         "success": True, "offers": [str(card) for card in EXISTING_CARDS if card.for_sale and card.owner != user]
     }), 200
+
+@market.route("/set_watch", methods=["POST"])
+def set_watch():
+    data: dict = request.get_json()
+
+    user = data.get("user", None)
+    id = data.get("id", None)
+    watch = data.get("watch", None)
+
+    if user is None:
+        return jsonify({"error": "user not supplied"}), 400
+    if id is None:
+        return jsonify({"error": "id not supplied"}), 400
+    if watch is None:
+        return jsonify({"error": "watch not supplied"}), 400
+
+    card = None
+
+    for x in EXISTING_CARDS:
+        if x.id == id and x.owner != user:
+            card = x
+            break
+    
+    if card is None:
+        return jsonify({"error": f"card with id {id} not found"}), 400
+
+    if watch == True and user not in card.watchers:
+        card.watchers.append(user)
+    elif watch == False and user in card.watchers:
+        card.watchers.remove(user)
+
+    return jsonify({"success": True}), 200
 
 # ADMIN
 
