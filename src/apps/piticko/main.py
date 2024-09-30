@@ -7,7 +7,7 @@ piticko = Blueprint("bar", __name__)
 
 class Order:
     def __init__(self, items, user):
-        self.id = str(uuid.uuid4())
+        self.id = len(ORDERS) + 1
         self.secret_id = str(uuid.uuid4())
         self.items = items
         self.user = user
@@ -27,6 +27,7 @@ class Order:
             "id": self.id,
             "finished": self.finished,
             "items": self.items,
+            "user": self.user,
         }
 
 
