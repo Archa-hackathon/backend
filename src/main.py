@@ -2,10 +2,12 @@
 
 from flask import Flask
 
-from apps.piticko import main
+from apps.piticko.main import piticko
+from apps.filter.main import filtr
 
 app = Flask(__name__)
-app.register_blueprint(main.piticko, url_prefix="/bar")
+app.register_blueprint(piticko, url_prefix="/bar")
+app.register_blueprint(filtr, url_prefix="/filter")
 
 
 @app.route("/")
