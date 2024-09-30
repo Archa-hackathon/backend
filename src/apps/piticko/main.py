@@ -19,7 +19,7 @@ class Order:
             "finished": self.finished,
             "items": self.items,
         }
-    
+
     def dict_no_secret(self):
         return {
             "id": self.id,
@@ -30,6 +30,7 @@ class Order:
 
 ORDERS: list[Order] = []  # Will be a database later?
 ALLOWED_ITEMS = ["pizza", "beer", "burger"]
+
 
 @piticko.route("/create_order", methods=["POST"])
 def create_order():
@@ -52,6 +53,22 @@ def create_order():
     return jsonify({"secret_id": order.secret_id, "success": True})
 
 
+@piticko.route("/get_order_status", methods=["GET"])
+def get_order_status():
+    secret_id: str | None = request.args.get("secret_id")
+
+    if secret_id is None:
+        return jsonify({"success": False, "error": "secret_id is required"}), 400
+
+    for order in ORDERS:
+        if order.secret_id != secret_id:
+            continue
+
+        return jsonify({"success": True, "finished": order.finished}), 200
+
+    return jsonify({"success": False, "error": "Order not found"}), 404
+
+
 # ADMIN
 
 
@@ -67,7 +84,7 @@ def finish_order():
         if existing_order.id == id:
             order = existing_order
             break
-    
+
     if order is None:
         return jsonify({"error": f"Order with id {id} not found"}), 400
 
@@ -75,9 +92,12 @@ def finish_order():
 
     return jsonify({"success": True}), 200
 
+
 @piticko.route("/list_orders", methods=["GET"])
 def list_orders():
-    return jsonify({
-        "success": True,
-        "orders": [order.dict_no_secret() for order in ORDERS]
-    }), 200
+    return (
+        jsonify(
+            {"success": True, "orders": [order.dict_no_secret() for order in ORDERS]}
+        ),
+        200,
+    )
