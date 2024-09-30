@@ -75,7 +75,7 @@ def get_order_status():
 @piticko.route("/finish_order", methods=["POST"])
 def finish_order():
     data = request.get_json()
-    
+
     if "id" not in data:
         return jsonify({"error": "Supplied data does not contain an order id."}), 400
 
@@ -105,12 +105,16 @@ def list_orders():
         200,
     )
 
+
 @piticko.route("/pickup_order", methods=["POST"])
 def pickup_order():
     data = request.get_json()
 
     if "secret_id" not in data:
-        return jsonify({"error": "Supplied data does not contain an order secret_id."}), 400
+        return (
+            jsonify({"error": "Supplied data does not contain an order secret_id."}),
+            400,
+        )
 
     secret_id = data["secret_id"]
 
@@ -123,7 +127,8 @@ def pickup_order():
 
     if order is None:
         return jsonify({"exists": False}), 200
-    
+
     ORDERS.remove(order)
 
     return jsonify({"exists": True, "order": order.dict()}), 200
+
