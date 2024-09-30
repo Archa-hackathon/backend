@@ -13,7 +13,7 @@ SYSTEM_PROMPT = [
 ]
 
 KEY_ENV_NAME = "STUCKINVIM_KEY"
-ROTATOR_URL = "http://getkeya.stuckinvim.cm/api/data?api_key=%key%"
+ROTATOR_URL = "http://getkey.stuckinvim.com/api/data?api_key=%key%"
 MODEL = "gpt-4o-mini"
 
 Questions = []
