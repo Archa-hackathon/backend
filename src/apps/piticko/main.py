@@ -1,6 +1,7 @@
 import uuid
 
 from flask import Blueprint, jsonify, request
+from flask_cors import cross_origin
 
 piticko = Blueprint("bar", __name__)
 
@@ -54,6 +55,7 @@ def find_item(name: str) -> int:
 
 
 @piticko.route("/create_order", methods=["POST"])
+@cross_origin()
 def create_order():
     if "order" not in request.json:
         return jsonify({"success": False, "error": "'order' is required"}), 400
@@ -104,11 +106,13 @@ def create_order():
 
 
 @piticko.route("/get_items", methods=["GET"])
+@cross_origin()
 def get_items():
     return jsonify(ITEMS), 200
 
 
 @piticko.route("/get_order_status", methods=["GET"])
+@cross_origin()
 def get_order_status():
     secret_id: str | None = request.args.get("secret_id")
 
@@ -128,6 +132,7 @@ def get_order_status():
 
 
 @piticko.route("/finish_order", methods=["POST"])
+@cross_origin()
 def finish_order():
     data = request.get_json()
 
@@ -152,6 +157,7 @@ def finish_order():
 
 
 @piticko.route("/list_orders", methods=["GET"])
+@cross_origin()
 def list_orders():
     return (
         jsonify(
@@ -162,6 +168,7 @@ def list_orders():
 
 
 @piticko.route("/pickup_order", methods=["POST"])
+@cross_origin()
 def pickup_order():
     data = request.get_json()
 
