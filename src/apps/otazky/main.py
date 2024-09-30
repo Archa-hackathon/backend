@@ -63,14 +63,14 @@ def answer_question():
     if "answer" not in data:
         return jsonify({"error": "Supplied data does not contain an answer."}), 400
 
-    question_obj = Questions.find(lambda q: q.get("question") == data["question"])
+    for q in Questions:
+        if q.get("question") != data["question"]:
+            continue
 
-    if question_obj is None:
-        return jsonify({"error": "Question not found."}), 404
+        is_correct = q.get("correct") == data["answer"]
+        return jsonify({"correct": is_correct}), 200
 
-    is_correct = question_obj.get("correct") == data["answer"]
-
-    return jsonify({"correct": is_correct}), 200
+    return jsonify({"error": "Question not found."}), 404
 
 
 # ADMIN
