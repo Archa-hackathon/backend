@@ -48,7 +48,7 @@ ITEMS = {
 
 def find_item(name: str) -> int:
     for i, item in enumerate(ITEMS["drinks"]):
-        if item.name == name:
+        if item["name"] == name:
             return i
 
     raise ValueError(f"Couldn't find item that satisfies query name='{name}")
