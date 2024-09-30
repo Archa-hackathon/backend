@@ -19,14 +19,17 @@ class Card:
         self.watchers = [] # list of users that are watching this card
     
     def __str__(self) -> str:
-        return json.dumps({
+        return json.dumps(self.as_json())
+    
+    def as_json(self):
+        return {
             "id": self.id,
             "owner": self.owner,
             "name": self.name,
             "price": self.price,
             "for_sale": self.for_sale,
             "watchers": self.watchers
-        })
+        }
 
 
 EXISTING_CARDS: list[Card] = []
@@ -77,7 +80,7 @@ def my_collection():
         return jsonify({"error": "user not supplied"}), 400
     
     return jsonify({
-        "success": True, "cards": [str(card) for card in EXISTING_CARDS if card.owner == user]
+        "success": True, "cards": [card.as_json() for card in EXISTING_CARDS if card.owner == user]
     }), 200
 
 @market.route("/buy_card", methods=["POST"])
@@ -119,7 +122,7 @@ def list_offers():
         return jsonify({"error": "user not supplied"}), 400
 
     return jsonify({
-        "success": True, "offers": [str(card) for card in EXISTING_CARDS if card.for_sale and card.owner != user]
+        "success": True, "offers": [card.as_json() for card in EXISTING_CARDS if card.for_sale and card.owner != user]
     }), 200
 
 @market.route("/set_watch", methods=["POST"])
