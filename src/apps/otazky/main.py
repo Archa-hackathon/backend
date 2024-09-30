@@ -1,16 +1,44 @@
-import ollama
+import os
+
+import openai
+import requests
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
 
 SYSTEM_PROMPT = [
     {
         "role": "system",
-        "content": "Jsi AI chatbot, který generuje otázky na zadané téma. Pracuješ v aplikaci pro divadlo ARCHA.",
+        "content": "Jsi AI chatbot, který generuje otázky na zadané téma. Odpovídej VELMI stručně - otázka musí být jedna krátká věta! Pracuješ v aplikaci pro divadlo ARCHA.",
     },
 ]
 
+KEY_ENV_NAME = "STUCKINVIM_KEY"
+ROTATOR_URL = "http://getkeya.stuckinvim.com/api/data?api_key=%key%"
+MODEL = "gpt-4o-mini"
+
+
+def fetch_key():
+    # Get the value of KEY_ENV_NAME in .env
+    stuckinvim_key = os.environ.get(KEY_ENV_NAME)
+
+    assert (
+        stuckinvim_key is not None
+    ), f"Please set {KEY_ENV_NAME} in the .env to your key rotator key!"
+
+    # Fetch the actual open ai key
+    response = requests.get(ROTATOR_URL.replace("%key%", stuckinvim_key))
+
+    assert response.status_code == 200, "Invalid key rotator key!"
+    assert (
+        response.json().get("key", None) is not None
+    ), "Key rotator returned invalid response!"
+
+    return response.json()["key"]
+
+
+client = openai.Client(api_key=fetch_key())
+
 otazky = Blueprint("otazky", __name__)
-ollama_client = ollama.Client("http://192.168.0.101:1111")
 
 
 # ADMIN
@@ -22,12 +50,13 @@ def generate_question():
     if "topic" not in data:
         return jsonify({"error": "Supplied data does not contain a topic."}), 400
 
-    response_data = ollama_client.chat(
-        model="llama3.2",
+    chat_completion = client.chat.completions.create(
         messages=SYSTEM_PROMPT
         + [{"role": "user", "content": f"Téma: {data['topic']}"}],
+        model=MODEL,
+        temperature=0.1,
     )
 
-    response: str = response_data["message"]["content"]
+    response: str = chat_completion.choices[0].message.content
 
     return jsonify(response), 200
