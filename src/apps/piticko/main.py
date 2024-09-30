@@ -123,7 +123,10 @@ def get_order_status():
         if order.secret_id != secret_id:
             continue
 
-        return jsonify({"success": True, "finished": order.finished}), 200
+        return (
+            jsonify({"success": True, "finished": order.finished, "id": order.id}),
+            200,
+        )
 
     return jsonify({"success": False, "error": "Order not found"}), 404
 
