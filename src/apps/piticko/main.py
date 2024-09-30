@@ -24,6 +24,9 @@ def create_order():
 
 
 @piticko.route("/finish_order", methods=["POST"])
-def create_order():
+def finish_order():
     data = request.get_json()
 
+    id = data["id"]
+
+    
