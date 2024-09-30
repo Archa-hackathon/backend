@@ -21,7 +21,8 @@ class Card:
             "id": self.id,
             "owner": self.owner,
             "name": self.name,
-            "price": self.price
+            "price": self.price,
+            "for_sale": self.for_sale
         })
 
 
@@ -61,7 +62,20 @@ def set_offer():
     
     return jsonify({"success": True}), 200
 
-@market.route("/buy_card", methods=["GET"])
+@market.route("/my_collection", methods=["POST"])
+def my_collection():
+    data: dict = request.get_json()
+
+    user = data.get("user", None)
+
+    if user is None:
+        return jsonify({"error": "user not supplied"}), 400
+    
+    return jsonify({
+        "success": True, "cards": [str(card) for card in EXISTING_CARDS if card.owner == user]
+    }), 200
+
+@market.route("/buy_card", methods=["POST"])
 def buy_card():
     data: dict = request.get_json()
 
@@ -88,10 +102,17 @@ def buy_card():
 
     return jsonify({"success": True}), 200
 
-@market.route("/list_offers", methods=["GET"])
+@market.route("/list_offers", methods=["POST"])
 def list_offers():
+    data: dict = request.get_json()
+
+    user = data.get("user", None)
+
+    if user is None:
+        return jsonify({"error": "user not supplied"}), 400
+
     return jsonify({
-        "success": True, "offers": [str(card) for card in EXISTING_CARDS if card.for_sale]
+        "success": True, "offers": [str(card) for card in EXISTING_CARDS if card.for_sale and card.owner != user]
     }), 200
 
 # ADMIN
@@ -111,3 +132,5 @@ def create_card():
     card = Card(name, owner)
 
     EXISTING_CARDS.append(card)
+
+    return jsonify({"success": True, "id": card.id}), 200
