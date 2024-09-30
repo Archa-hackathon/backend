@@ -166,9 +166,7 @@ def finish_order():
 @cross_origin()
 def list_orders():
     return (
-        jsonify(
-            {"success": True, "orders": [order.dict_no_secret() for order in ORDERS]}
-        ),
+        jsonify({"success": True, "orders": [order.dict() for order in ORDERS]}),
         200,
     )
 
