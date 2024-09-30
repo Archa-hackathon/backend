@@ -1,7 +1,8 @@
 import sqlite3
 import ollama
 
-from flask import Blueprint, current_app, g, jsonify, request
+from flask import Blueprint, current_app, g, jsonify, request, Response
+from flask import copy_current_request_context
 
 filtr = Blueprint("filter", __name__)
 
@@ -47,5 +48,39 @@ def question():
         )
 
         return jsonify(response), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@filtr.route("/question_stream", methods=["POST"])
+def question_stream():
+    data: dict = request.get_json()
+
+    question = data.get("question", None)
+
+    if question is None:
+        return jsonify({"error": "No question provided."}), 400
+
+    try:
+        response = ollama_client.chat(
+            stream=True,
+            model="llama3.2",
+            messages=[
+                {
+                    "role": "user",
+                    "content": question
+                }
+            ]
+        )
+
+        @copy_current_request_context
+        def generator():
+            for chunk in response:
+                print("CHUNK")
+                print(chunk)
+                yield jsonify(chunk)
+                print("YIELDED")
+
+        #return jsonify(response), 200
+        return Response(generator(), content_type="text/plain")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
