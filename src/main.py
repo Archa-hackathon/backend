@@ -1,13 +1,19 @@
 #!/usr/bin/python3
 
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
-from apps.piticko.main import piticko
 from apps.filter.main import filtr
+from apps.piticko.main import piticko
 
 app = Flask(__name__)
 app.register_blueprint(piticko, url_prefix="/bar")
 app.register_blueprint(filtr, url_prefix="/filter")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)
 
 
 @app.route("/")
