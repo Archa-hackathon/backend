@@ -8,7 +8,7 @@ from flask_cors import cross_origin
 SYSTEM_PROMPT = [
     {
         "role": "system",
-        "content": "Jsi AI chatbot, který generuje otázky na zadané téma. Odpovídej VELMI stručně - otázka musí být jedna krátká věta! Pracuješ v aplikaci pro divadlo ARCHA.",
+        "content": 'Jsi AI chatbot, který generuje otázky na zadané téma. Odpovídej VELMI stručně - otázka musí být jedna krátká věta! Formát musí být JSON: {"question": "příklad otázka", "answers": ["odpověď jedna", "odpoved dva", "odpoved tri"], "correct": 1}. Vždycky tři odpovědi, jedna správná (index). Pracuješ v aplikaci pro divadlo ARCHA.',
     },
 ]
 
