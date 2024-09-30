@@ -1,9 +1,12 @@
 #!/usr/bin/python3
 
+from dotenv import load_dotenv
 from flask import Flask
 from flask_migrate import Migrate
 
 from extensions import db
+
+load_dotenv()
 
 
 def create_app():

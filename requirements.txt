@@ -2,4 +2,6 @@ flask
 Flask-SQLAlchemy
 Flask-Migrate
 flask-cors
-ollama
+python-dotenv
+openai
+requests
