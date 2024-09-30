@@ -52,4 +52,16 @@ def finish_order():
 
     id = data["id"]
 
+    order = None
+
+    for existing_order in ORDERS:
+        if existing_order.id == id:
+            order = existing_order
+            break
     
+    if order is None:
+        return jsonify({"error": f"Order with id {id} not found"}), 400
+
+    order.finished = True
+
+    return jsonify({"success": True}), 200
