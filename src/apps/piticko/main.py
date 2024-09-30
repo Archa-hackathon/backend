@@ -41,7 +41,7 @@ ITEMS = {
         {"name": "Coca Cola 0.5l", "icon": "", "price": 30},
         {"name": "Gin Tonic", "icon": "", "price": 145},
         {"name": "Cuba Libre", "icon": "", "price": 145},
-        {"name": "Magnesia 0.5l", "icon": "", "price": 25},
+        {"name": "Magnesia perlivá voda", "icon": "", "price": 25},
     ],
 }
 
