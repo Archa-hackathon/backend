@@ -1,6 +1,6 @@
 import sqlite3
 import ollama
-import json
+import json, os
 
 from flask import Blueprint, current_app, g, jsonify, request, Response
 from flask import copy_current_request_context
@@ -9,6 +9,8 @@ filtr = Blueprint("filter", __name__)
 
 
 ollama_client = ollama.Client("http://192.168.0.101:1111")
+with open(os.path.join(os.path.dirname(__file__), "system_prompt.json"), "r") as file:
+    SYSTEM_PROMPT = json.load(file)
 
 
 def get_db():
@@ -40,7 +42,7 @@ def question():
     try:
         response = ollama_client.chat(
             model="llama3.2",
-            messages=[
+            messages=SYSTEM_PROMPT + [
                 {
                     "role": "user",
                     "content": question
@@ -65,7 +67,7 @@ def question_stream():
         response = ollama_client.chat(
             stream=True,
             model="llama3.2",
-            messages=[
+            messages=SYSTEM_PROMPT + [
                 {
                     "role": "user",
                     "content": question
