@@ -193,6 +193,29 @@ def pickup_order():
     if order is None:
         return jsonify({"exists": False}), 200
 
+    return jsonify({"exists": True, "order": order.dict()}), 200
+
+
+@piticko.route("/delete_order", methods=["DELETE"])
+@cross_origin()
+def delete_order():
+    data = request.get_json()
+
+    if "id" not in data:
+        return jsonify({"error": "Supplied data does not contain an order id."}), 400
+
+    id = data["id"]
+
+    order = None
+
+    for existing_order in ORDERS:
+        if existing_order.id == id:
+            order = existing_order
+            break
+
+    if order is None:
+        return jsonify({"error": f"Order with id {id} not found"}), 400
+
     ORDERS.remove(order)
 
-    return jsonify({"exists": True, "order": order.dict()}), 200
+    return jsonify({"success": True}), 200
