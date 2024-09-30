@@ -37,10 +37,10 @@ ITEMS = {
     "currency": "CZK",
     "currencySymbol": "Kč",
     "drinks": [
-        {"name": "Voda 0.5l", "icon": "", "price": 20},
-        {"name": "Coca Cola 0.5l", "icon": "", "price": 30},
-        {"name": "Gin Tonic", "icon": "", "price": 145},
-        {"name": "Cuba Libre", "icon": "", "price": 145},
+        {"name": "Voda 0.5l", "icon": "/food/water.png", "price": 20},
+        {"name": "Coca Cola 0.5l", "icon": "/food/coke.png", "price": 30},
+        {"name": "Gin Tonic", "icon": "/food/gintonic.png", "price": 145},
+        {"name": "Cuba Libre", "icon": "/food/cubalibre.png", "price": 145},
         {"name": "Magnesia perlivá voda", "icon": "", "price": 25},
     ],
 }
