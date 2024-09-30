@@ -41,7 +41,7 @@ ITEMS = {
         {"name": "Coca Cola 0.5l", "icon": "/food/coke.png", "price": 30},
         {"name": "Gin Tonic", "icon": "/food/gintonic.png", "price": 145},
         {"name": "Cuba Libre", "icon": "/food/cubalibre.png", "price": 145},
-        {"name": "Magnesia perlivá voda", "icon": "", "price": 25},
+        {"name": "Magnesia perlivá voda", "icon": "/food/magnesia.png", "price": 25},
     ],
 }
 
@@ -139,20 +139,23 @@ def get_order_status():
 def finish_order():
     data = request.get_json()
 
-    if "id" not in data:
-        return jsonify({"error": "Supplied data does not contain an order id."}), 400
+    if "secret_id" not in data:
+        return (
+            jsonify({"error": "Supplied data does not contain an order secret_id."}),
+            400,
+        )
 
-    id = data["id"]
+    id = data["secret_id"]
 
     order = None
 
     for existing_order in ORDERS:
-        if existing_order.id == id:
+        if existing_order.secret_id == id:
             order = existing_order
             break
 
     if order is None:
-        return jsonify({"error": f"Order with id {id} not found"}), 400
+        return jsonify({"error": f"Order with secret_id {id} not found"}), 400
 
     order.finished = True
 
@@ -163,9 +166,7 @@ def finish_order():
 @cross_origin()
 def list_orders():
     return (
-        jsonify(
-            {"success": True, "orders": [order.dict_no_secret() for order in ORDERS]}
-        ),
+        jsonify({"success": True, "orders": [order.dict() for order in ORDERS]}),
         200,
     )
 
