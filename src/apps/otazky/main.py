@@ -1,3 +1,4 @@
+import json
 import os
 
 import openai
@@ -90,7 +91,8 @@ def generate_question():
     )
 
     response: str = chat_completion.choices[0].message.content
+    response_json = json.loads(response)
 
-    Questions.append(response)
+    Questions.append(response_json)
 
     return jsonify(response), 200
