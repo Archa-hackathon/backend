@@ -176,6 +176,7 @@ def create_card():
     name = data.get("name", None)
     owner = data.get("owner", None)
     desc = data.get("desc", None)
+    img = data.get("img", None)
 
     if name is None:
         return jsonify({"error": "name not supplied"}), 400
@@ -183,8 +184,10 @@ def create_card():
         return jsonify({"error": "owner not supplied"}), 400
     if desc is None:
         return jsonify({"error": "desc not supplied"}), 400
+    if img is None:
+        return jsonify({"error": "img not supplied"}), 400
 
-    card = Card(name, desc, owner)
+    card = Card(name, desc, owner, img)
 
     EXISTING_CARDS.append(card)
 
