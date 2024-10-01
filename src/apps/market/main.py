@@ -8,10 +8,11 @@ market = Blueprint("market", __name__)
 
 
 class Card:
-    def __init__(self, name: str, desc: str, owner: str):
+    def __init__(self, name: str, desc: str, owner: str, img: str):
         self.name = name
         self.desc = desc
         self.owner = owner
+        self.img = img
 
         self.id = str(uuid.uuid4())
         self.price = 0
@@ -28,6 +29,7 @@ class Card:
             "name": self.name,
             "desc": self.desc,
             "owner": self.owner,
+            "img": self.img,
             "price": self.price,
             "for_sale": self.for_sale,
             "watchers": self.watchers
