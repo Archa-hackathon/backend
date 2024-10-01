@@ -1,3 +1,4 @@
+import json
 import os
 
 import openai
@@ -8,13 +9,15 @@ from flask_cors import cross_origin
 SYSTEM_PROMPT = [
     {
         "role": "system",
-        "content": "Jsi AI chatbot, který generuje otázky na zadané téma. Odpovídej VELMI stručně - otázka musí být jedna krátká věta! Pracuješ v aplikaci pro divadlo ARCHA.",
+        "content": 'Jsi AI chatbot, který generuje otázky na zadané téma. Odpovídej VELMI stručně - otázka musí být jedna krátká věta! Formát musí být JSON: {"question": "příklad otázka", "answers": ["odpověď jedna", "odpoved dva", "odpoved tri"], "correct": 1}. Vždycky tři odpovědi, jedna správná (index). Pracuješ v aplikaci pro divadlo ARCHA.',
     },
 ]
 
 KEY_ENV_NAME = "STUCKINVIM_KEY"
-ROTATOR_URL = "http://getkeya.stuckinvim.com/api/data?api_key=%key%"
+ROTATOR_URL = "http://getkey.stuckinvim.com/api/data?api_key=%key%"
 MODEL = "gpt-4o-mini"
+
+Questions = []
 
 
 def fetch_key():
@@ -37,8 +40,51 @@ def fetch_key():
 
 
 client = openai.Client(api_key=fetch_key())
-
 otazky = Blueprint("otazky", __name__)
+
+
+@otazky.route("/get_questions", methods=["GET"])
+@cross_origin()
+def get_questions():
+    # Remove the correct answer from all questions
+    sanitized_questions = [
+        {"question": q.get("question"), "answers": q.get("answers")} for q in Questions
+    ]
+
+    return jsonify({"success": True, "questions": sanitized_questions}), 200
+
+
+@otazky.route("/answer_question", methods=["POST"])
+@cross_origin()
+def answer_question():
+    data = request.get_json()
+
+    if "question" not in data:
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "error": "Supplied data does not contain a question.",
+                }
+            ),
+            400,
+        )
+    if "answer" not in data:
+        return (
+            jsonify(
+                {"success": False, "error": "Supplied data does not contain an answer."}
+            ),
+            400,
+        )
+
+    for q in Questions:
+        if q.get("question") != data["question"]:
+            continue
+
+        is_correct = q.get("correct") == data["answer"]
+        return jsonify({"success": True, "correct": is_correct}), 200
+
+    return jsonify({"success": False, "error": "Question not found."}), 404
 
 
 # ADMIN
@@ -48,7 +94,12 @@ def generate_question():
     data = request.get_json()
 
     if "topic" not in data:
-        return jsonify({"error": "Supplied data does not contain a topic."}), 400
+        return (
+            jsonify(
+                {"success": False, "error": "Supplied data does not contain a topic."}
+            ),
+            400,
+        )
 
     chat_completion = client.chat.completions.create(
         messages=SYSTEM_PROMPT
@@ -58,5 +109,8 @@ def generate_question():
     )
 
     response: str = chat_completion.choices[0].message.content
+    response_json = json.loads(response)
 
-    return jsonify(response), 200
+    Questions.append(response_json)
+
+    return jsonify({"success": True, "response": response}), 200
