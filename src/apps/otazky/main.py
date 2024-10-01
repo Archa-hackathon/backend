@@ -51,7 +51,7 @@ def get_questions():
         {"question": q.get("question"), "answers": q.get("answers")} for q in Questions
     ]
 
-    return jsonify(sanitized_questions), 200
+    return jsonify({"success": True, "questions": sanitized_questions}), 200
 
 
 @otazky.route("/answer_question", methods=["POST"])
@@ -60,18 +60,31 @@ def answer_question():
     data = request.get_json()
 
     if "question" not in data:
-        return jsonify({"error": "Supplied data does not contain a question."}), 400
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "error": "Supplied data does not contain a question.",
+                }
+            ),
+            400,
+        )
     if "answer" not in data:
-        return jsonify({"error": "Supplied data does not contain an answer."}), 400
+        return (
+            jsonify(
+                {"success": False, "error": "Supplied data does not contain an answer."}
+            ),
+            400,
+        )
 
     for q in Questions:
         if q.get("question") != data["question"]:
             continue
 
         is_correct = q.get("correct") == data["answer"]
-        return jsonify({"correct": is_correct}), 200
+        return jsonify({"success": True, "correct": is_correct}), 200
 
-    return jsonify({"error": "Question not found."}), 404
+    return jsonify({"success": False, "error": "Question not found."}), 404
 
 
 # ADMIN
@@ -81,7 +94,12 @@ def generate_question():
     data = request.get_json()
 
     if "topic" not in data:
-        return jsonify({"error": "Supplied data does not contain a topic."}), 400
+        return (
+            jsonify(
+                {"success": False, "error": "Supplied data does not contain a topic."}
+            ),
+            400,
+        )
 
     chat_completion = client.chat.completions.create(
         messages=SYSTEM_PROMPT
@@ -95,4 +113,4 @@ def generate_question():
 
     Questions.append(response_json)
 
-    return jsonify(response), 200
+    return jsonify({"success": True, "response": response}), 200
